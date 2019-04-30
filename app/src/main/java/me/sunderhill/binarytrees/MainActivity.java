@@ -11,11 +11,17 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    BTree<Integer> bint;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadAirportBTree();
+        bint = new BTree<Integer>();
+        bint.add(5);
+        bint.add(3);
+        bint.add(4);
 
     }
 

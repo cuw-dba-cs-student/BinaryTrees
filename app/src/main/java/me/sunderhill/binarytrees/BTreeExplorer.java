@@ -18,26 +18,26 @@ public class BTreeExplorer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_traverse_btree);
         this.nodeTV = (TextView) findViewById(R.id.bTreeNodeValET);
-        this.nodeTV.setText(DataCore.currBTreeNode.getValue().toString());
+        this.nodeTV.setText(DataCore.currApTreeNode.getValue().iata);
         this.leftChildBtn = (Button) findViewById(R.id.leftChildBtn);
         this.rightChildBtn = (Button) findViewById(R.id.rightChildBtn);
-        if(DataCore.currBTreeNode.getLeft() != null)
+        if(DataCore.currApTreeNode.getLeft() != null)
         {
             leftChildBtn.setVisibility(View.VISIBLE);
         }
-        if (DataCore.currBTreeNode.getRight() != null)
+        if (DataCore.currApTreeNode.getRight() != null)
         {
             rightChildBtn.setVisibility(View.VISIBLE);
         }
     }
 
     public void onLeftChildBtnPress(View v){
-        DataCore.currBTreeNode = DataCore.currBTreeNode.getLeft();
+        DataCore.currApTreeNode = DataCore.currApTreeNode.getLeft();
         launchBTreeExplorer(v);
     }
 
     public void onRightChildBtnPress(View v) {
-        DataCore.currBTreeNode = DataCore.currBTreeNode.getRight();
+        DataCore.currApTreeNode = DataCore.currApTreeNode.getRight();
         launchBTreeExplorer(v);
     }
 

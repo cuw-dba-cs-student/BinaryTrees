@@ -19,16 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DataCore.apBTree = new BTree<Airport>();
         loadAirportBTree();
-        DataCore.integerBTree = new BTree<Integer>();
-        DataCore.integerBTree.add(5);
-        DataCore.integerBTree.add(3);
-        DataCore.integerBTree.add(4);
-        DataCore.integerBTree.add(8);
-        DataCore.integerBTree.add(6);
-        DataCore.integerBTree.add(9);
-        DataCore.currBTreeNode = DataCore.integerBTree.root;
-
     }
 
     public static void loadAirportBTree() {
@@ -36,15 +28,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Airport ap;
+                int count = 1;
                 for ( DataSnapshot ds : dataSnapshot.getChildren()) {
                     ap = ds.getValue(Airport.class);
-                    if (ap.iata != null) {
+                    if ( !ap.iata.contains("iata") ) {
                         DataCore.apBTree.add(ap);
                     }
                 }
                 DataCore.currApTreeNode = DataCore.apBTree.root;
-                Log.d("", "Snapshot received");
-
             }
 
             @Override

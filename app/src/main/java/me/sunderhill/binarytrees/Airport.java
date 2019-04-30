@@ -9,7 +9,7 @@ public class Airport implements Serializable, Comparable<Airport> {
     public String name;
     public String city;
 
-    public Airport(String country, String region, String iata, String name, String city) {
+    public Airport(String city, String country, String iata, String name, String region) {
         this.country = country;
         this.region = region;
         this.iata = iata;

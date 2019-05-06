@@ -7,9 +7,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,16 +35,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void loadAirportBTree() {
-        DbCore.myDbRef.addValueEventListener(new ValueEventListener() {
+        DbCore.myDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Airport ap;
-                int count = 1;
                 for ( DataSnapshot ds : dataSnapshot.getChildren()) {
+                    boolean addToTree = true;
                     ap = ds.getValue(Airport.class);
-                    if ( !ap.iata.contains("iata") ) {
-                        DataCore.apBTree.add(ap);
+                    if (ap.iata.startsWith("\"")) {
+                        ap.sanitize();
+                        if(ap.isLegalCode()) {
+                            DbCore.myDbRef.child(ds.getKey()).setValue(ap);
+                        }
+                        else {
+                            DbCore.myDbRef.child(ds.getKey()).removeValue();
+                            addToTree = false;
+                        }
                     }
+                    if(addToTree) { DataCore.apBTree.add(ap); }
                 }
                 DataCore.currApTreeNode = DataCore.apBTree.root;
             }
@@ -49,4 +68,6 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, BTreeExplorer.class);
         startActivity(i);
     }
+
+
 }

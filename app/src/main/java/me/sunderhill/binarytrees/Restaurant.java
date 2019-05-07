@@ -1,5 +1,7 @@
 package me.sunderhill.binarytrees;
 
+import android.widget.ArrayAdapter;
+
 public class Restaurant {
     public String name;
     public String url;
@@ -8,7 +10,7 @@ public class Restaurant {
     public String address;
     public String phone;
 
-    public void Restaurant(
+    public Restaurant(
             String name, String url, String rating, String reviewCount,
             String address, String phone )
     {

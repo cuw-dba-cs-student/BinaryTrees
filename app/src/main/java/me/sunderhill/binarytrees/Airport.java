@@ -41,9 +41,7 @@ public class Airport implements Serializable, Comparable<Airport> {
     private String removeQuotes(String s) {
         String retVal = "";
         for(int i = 0; i <s.length(); i++) {
-            if(s.charAt(i) != '"') {
-                retVal += s.charAt(i);
-            }
+            if(s.charAt(i) != '"') { retVal += s.charAt(i); }
         }
         return retVal;
     }

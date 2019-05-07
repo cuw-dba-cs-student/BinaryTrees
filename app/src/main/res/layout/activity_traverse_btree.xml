@@ -17,7 +17,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
@@ -36,6 +36,20 @@
             android:layout_weight="1"
             android:onClick="onRightChildBtnPress"
             android:text="Right"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/viewYelpBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onViewYelpBtnPress"
+            android:text="View Yelp Restaurant List"
             android:visibility="invisible" />
     </LinearLayout>
 </LinearLayout>

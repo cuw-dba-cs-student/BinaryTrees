@@ -17,9 +17,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class BTreeExplorer extends AppCompatActivity {
@@ -27,9 +25,9 @@ public class BTreeExplorer extends AppCompatActivity {
     TextView nodeTV;
     Button leftChildBtn;
     Button rightChildBtn;
+    Button viewYelpBtn;
     ProgressDialog pDialog;
     BTreeExplorer thisInstance;
-    private LinkedList<Restaurant> yelpRestaurants = new LinkedList<Restaurant>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,18 +35,19 @@ public class BTreeExplorer extends AppCompatActivity {
         setContentView(R.layout.activity_traverse_btree);
 
         this.nodeTV = (TextView) findViewById(R.id.bTreeNodeValET);
-        this.nodeTV.setText(DataCore.currApTreeNode.getValue().iata);
+        this.nodeTV.setText(DataCore.currApTreeNode.getValue().name + " (" + DataCore.currApTreeNode.getValue().iata +")" );
         this.leftChildBtn = (Button) findViewById(R.id.leftChildBtn);
         this.rightChildBtn = (Button) findViewById(R.id.rightChildBtn);
+        this.viewYelpBtn = (Button) findViewById(R.id.viewYelpBtn);
 
         if(DataCore.currApTreeNode.getLeft() != null) {leftChildBtn.setVisibility(View.VISIBLE);}
         if (DataCore.currApTreeNode.getRight() != null){rightChildBtn.setVisibility(View.VISIBLE);}
 
         this.pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Loading...PLease wait");
+        pDialog.setMessage("Checking Yelp...Please wait");
         pDialog.show();
-
         thisInstance = this;
+        DataCore.yelpRestaurants.clear();
         getYelp();
     }
 
@@ -68,10 +67,15 @@ public class BTreeExplorer extends AppCompatActivity {
 
     }
 
+    public void onViewYelpBtnPress(View v) {
+        Intent i = new Intent(this, YelpActivity.class);
+        DataCore.currAp = "" + this.nodeTV.getText();
+        this.startActivity(i);
+    }
     public void getYelp() {
         Airport ap = DataCore.currApTreeNode.getValue();
-        String url = "https://api.yelp.com/v3/businesses/search?location=Cedar Grove US-WI&categories=restaurants";
-        //String url = "https://api.yelp.com/v3/businesses/search?location="+ap.city+" " + ap.region + "&categories=restaurants";
+        //String url = "https://api.yelp.com/v3/businesses/search?location=Cedar Grove US-WI&categories=restaurants";
+        String url = "https://api.yelp.com/v3/businesses/search?location="+ap.city+" " + ap.region + "&categories=restaurants";
         System.out.println("*** Yelp Request URL  = " + url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest (
                 Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -82,23 +86,31 @@ public class BTreeExplorer extends AppCompatActivity {
                     JSONArray businesses = response.getJSONArray("businesses");
                     for(int i = 0; i < businesses.length(); i++)
                     {
+
                         JSONObject rjson = businesses.getJSONObject(i);
-                        String name = rjson.getString("name");
-                        String url = rjson.getString("url");
-                        String rating = rjson.getString("rating");
-                        String reviewCount = rjson.getString("review_count");
-                        JSONObject da = rjson.getJSONObject("location");
-                        JSONArray das = da.getJSONArray("display_address");
-                        String phone = rjson.getString("display_phone");
-                        System.out.println("*** Name: " + name);
-                        System.out.println("*** URL: " + url);
-                        System.out.println("*** Rating: " + rating);
-                        System.out.println("*** Review Count: " + reviewCount);
-                        System.out.println("*** Location: " + rjson.getJSONObject("location"));
-                        System.out.println("*** DA1: " + das.getString(0));
-                        System.out.println("*** DA2: " + das.getString(1));
+                        JSONObject location = rjson.getJSONObject("location");
+                        JSONArray dispAddr = location.getJSONArray("display_address");
+                        String r[] = new String[6];
+                        r[0] = rjson.getString("name");
+                        r[1] = rjson.getString("url");
+                        r[2] = rjson.getString("rating");
+                        r[3] = rjson.getString("review_count");
+                        r[4] = rjson.getString("display_phone");
+                        r[5] = dispAddr.getString(0) + ", " + dispAddr.getString(1);
+
+                        Restaurant rt = new Restaurant(r[0],r[1],r[2],r[3],r[5],r[4]);
+
+                        DataCore.yelpRestaurants.add(rt);
+
+                        System.out.println("*** Name: " + r[0]);
+                        System.out.println("*** URL: " + r[1]);
+                        System.out.println("*** Rating: " + r[2]);
+                        System.out.println("*** Review Count: " + r[3]);
+                        System.out.println("*** Phone " + r[4]);
+                        System.out.println("*** Address " + r[5]);
 
                     }
+                    thisInstance.viewYelpBtn.setVisibility(View.VISIBLE);
                 }
                 catch(Exception e)
                 {
@@ -110,7 +122,6 @@ public class BTreeExplorer extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO: Handle error
                 System.out.println("*** " + error.toString());
                 thisInstance.pDialog.hide();
             }
@@ -127,5 +138,6 @@ public class BTreeExplorer extends AppCompatActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
     }
+
 
 }

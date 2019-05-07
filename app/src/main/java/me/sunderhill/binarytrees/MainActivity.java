@@ -1,5 +1,6 @@
 package me.sunderhill.binarytrees;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -7,30 +8,25 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     BTree<Integer> bint;
+    static ProgressDialog pDialog;
+    MainActivity parentClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         DataCore.apBTree = new BTree<Airport>();
+        pDialog = new ProgressDialog(this);
+        parentClass = this;
+        pDialog.setMessage("Retrieving Airports from Firebase...Please wait");
+        pDialog.show();
         loadAirportBTree();
     }
 
@@ -55,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     if(addToTree) { DataCore.apBTree.add(ap); }
                 }
                 DataCore.currApTreeNode = DataCore.apBTree.root;
+                pDialog.hide();
             }
 
             @Override
